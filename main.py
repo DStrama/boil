@@ -157,8 +157,6 @@ class Calculation:
         else:
             for k in range((self.col - 1), -1, -1):
                 for j in range((self.row - 1), -1, -1):
-                    print(str(k))
-                    print(str(j))
                     if self.grid[k][j].transportation > 0:
                         self.index_of_transportation[i][0] = k
                         self.index_of_transportation[i][1] = j
@@ -197,8 +195,6 @@ class Calculation:
                 self.beta[y][1] = 1
 
     def set_delta(self):
-        self.delta = [0] * (self.col-1)
-
         for i in range(self.col - 1):
                 self.delta[i] = [0] * (self.row -1)
 
@@ -207,13 +203,12 @@ class Calculation:
                 if self.grid[i][j].transportation == 0:
                     self.delta[i][j] = self.grid[i][j].unit_profit - self.alfa[i][0] - self.beta[j][0]
                 else:
-
                     self.delta[i][j] = 0
 
     def print_grid(self):
         k = 0
-        for i in range(self.col-1):
-            for j in range(self.row-1):
+        for i in range(self.col):
+            for j in range(self.row):
                 print("unit profit: " + str(self.grid[i][j].unit_profit) + " transporation " + str(
                     self.grid[i][j].transportation) + " step: " + str(k))
                 k = k + 1
