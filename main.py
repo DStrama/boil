@@ -14,8 +14,8 @@ class Cell:
 class Calculation:
 
     def __init__(self, supply, demand, transport_cost, supply_cost, demand_cost):
-        self.row = len(demand)
-        self.col = len(supply)
+        self.row = len(demand) + 1
+        self.col = len(supply) + 1
         self.supply = supply
         self.demand = demand
         self.supply_cost = supply_cost
@@ -25,7 +25,7 @@ class Calculation:
         self.grid = [0] * self.col
         self.alfa = [0] * self.col
         self.beta = [0] * self.row
-        self.delta = [0] * (self.col)
+        self.delta = [0] * (self.col - 1)
         self.index_of_unit_profit = [0] * (self.col * self.row)
         self.index_of_transportation = [0] * (self.col * self.row)
         self.index_of_route = [0] * 4
@@ -38,6 +38,7 @@ class Calculation:
 
     def solve_problem(self):
         self.create_grid()
+        self.set_supply_demands()
         self.unit_profit_indexes()
         self.set_transport()
         self.update_index_transportion()
@@ -49,8 +50,8 @@ class Calculation:
     def unit_profit_indexes(self):
         unit_profits = []
 
-        for inx_col in range(self.col ):
-            for inx_row in range(self.row ):
+        for inx_col in range(self.col -1):
+            for inx_row in range(self.row -1):
                 unit_profits.append(self.grid[inx_col][inx_row].unit_profit)
 
         i = 0
@@ -63,33 +64,33 @@ class Calculation:
             del unit_profits[idx]
             i = i + 1
 
-        for inx_row in range(self.row):
-            for inx_col in range(self.col):
-                if self.has_assigned_array(self.index_of_unit_profit, [inx_row, inx_col]):
-                    self.index_of_unit_profit[i][0] = inx_row
-                    self.index_of_unit_profit[i][1] = inx_col
+        for inx_col in range(self.col):
+            for inx_row in range(self.row):
+                if not self.has_assigned_array(self.index_of_unit_profit, [inx_col, inx_row]):
+                    self.index_of_unit_profit[i][0] = inx_col
+                    self.index_of_unit_profit[i][1] = inx_row
+                    i = i + 1
 
     def has_assigned_array(self, array, subarray):
-
         for inx_i, el_i in enumerate(array):
             flag = False
             for inx_j, el_j in enumerate(el_i):
-                if array[inx_i][inx_j] == subarray:
+                if array[inx_i][inx_j] == subarray[inx_j]:
                     flag = True
                 else:
                     flag = False
                     break
 
-            if flag: return flag
+            if flag == True: return True
 
         return False
 
     def get_index_unit_profit(self, unit_profit):
         list = []
-        for inx_col in range(self.col ):
-            for inx_row in range(self.row ):
-                if self.grid[inx_col][inx_row].unit_profit == unit_profit and not self.grid[inx_col][
-                    inx_row].used and len(list) == 0:
+        for inx_col in range(self.col -1):
+            for inx_row in range(self.row -1):
+                if self.grid[inx_col][inx_row].unit_profit == unit_profit and len(list) == 0and not self.grid[inx_col][
+                    inx_row].used:
                     self.grid[inx_col][inx_row].used = True
                     list.append(inx_col)
                     list.append(inx_row)
@@ -115,9 +116,12 @@ class Calculation:
 
         for inx_col in range(self.col):
             for inx_row in range(self.row):
-                unit_profit = self.demand_cost[inx_row] - self.supply_cost[inx_col] - self.transport_cost[inx_col][
+                if inx_col <= (self.col -2) and inx_row <= (self.row -2):
+                    unit_profit = self.demand_cost[inx_row] - self.supply_cost[inx_col] - self.transport_cost[inx_col][
                     inx_row]
-                self.grid[inx_col][inx_row] = Cell(unit_profit, 0)
+                    self.grid[inx_col][inx_row] = Cell(unit_profit, 0)
+                else:
+                    self.grid[inx_col][inx_row] = Cell(0, 0)
 
     def set_transport(self):
         tmp_supply = []
@@ -141,6 +145,14 @@ class Calculation:
                 tmp_supply[x] -= tmp_demand[y]
                 tmp_demand[y] = 0
 
+    def set_supply_demands(self):
+        if np.sum(self.supply) != np.sum(self.demand):
+            self.balanced = False
+        supply_sum = np.sum(self.supply)
+        demand_sum = np.sum(self.demand)
+        self.supply.append(demand_sum)
+        self.demand.append(supply_sum)
+
     def update_index_transportion(self):
 
         i = 0
@@ -156,8 +168,8 @@ class Calculation:
                         self.index_of_transportation[i][1] = inx_j
                         i = i + 1
         else:
-            for k in range((self.col), -1, -1):
-                for j in range((self.row), -1, -1):
+            for k in range((self.col-1), -1, -1):
+                for j in range((self.row-1), -1, -1):
                     if self.grid[k][j].transportation > 0:
                         self.index_of_transportation[i][0] = k
                         self.index_of_transportation[i][1] = j
@@ -196,11 +208,11 @@ class Calculation:
                 self.beta[y][1] = 1
 
     def set_delta(self):
-        for i in range(self.col):
-            self.delta[i] = [0] * (self.row)
+        for i in range(self.col-1):
+            self.delta[i] = [0] * (self.row-1)
 
-        for i in range(self.col):
-            for j in range(self.row):
+        for i in range(self.col-1):
+            for j in range(self.row-1):
                 if self.grid[i][j].transportation == 0:
                     self.delta[i][j] = self.grid[i][j].unit_profit - self.alfa[i][0] - self.beta[j][0]
                 else:
@@ -208,8 +220,8 @@ class Calculation:
 
     def print_grid(self):
         k = 0
-        for i in range(self.col):
-            for j in range(self.row):
+        for i in range(self.col-1):
+            for j in range(self.row-1):
                 print("unit profit: " + str(self.grid[i][j].unit_profit) + " transporation " + str(
                     self.grid[i][j].transportation) + " step: " + str(k))
                 k = k + 1
@@ -240,11 +252,11 @@ class Calculation:
         beta = []
         col = self.col
         row = self.row
-        alfa_l = len(self.alfa) - 1
-        beta_l = len(self.beta) - 1
+        alfa_l = len(self.alfa)
+        beta_l = len(self.beta)
         if self.balanced:
-            col = self.col
-            row = self.row
+            col = self.col - 1
+            row = self.row - 1
             alfa_l = len(self.alfa) - 1
             beta_l = len(self.beta) - 1
 
@@ -273,19 +285,18 @@ class Calculation:
         self.income = 0
         self.transportation_cost = 0
         self.purchase_cost = 0
-        for i in range(self.col):
-            for j in range(self.row):
+        for i in range(self.col-1):
+            for j in range(self.row-1):
                 if self.grid[i][j].transportation > 0:
                     self.transportation_cost += self.grid[i][j].transportation * self.transport_cost[i][j]
                     self.purchase_cost += self.supply_cost[i] * self.grid[i][j].transportation
                     self.income += self.demand_cost[j] * self.grid[i][j].transportation
 
     def set_index_route(self):
-        max_row = self.delta
-        max_positive_value = max(max_row)[0]
+        max_row = np.max(self.delta, axis=0)
+        max_positive_value = max(max_row)
         if max_positive_value > 0:
             array_of_index = self.get_index_delta(max_positive_value)
-            print(array_of_index)
             y = array_of_index[0]
             x = array_of_index[1]
             self.index_of_route[0][0] = x
@@ -293,7 +304,7 @@ class Calculation:
             self.available = False
             for i in range(self.col):
                 if i != y:
-                    for j in range(self.row):
+                    for j in range(self.row-1):
                         if self.grid[y][j].transportation > 0:
                             if self.grid[i][j].transportation > 0 and self.grid[i][x].transportation > 0:
                                 self.available = True
@@ -305,17 +316,16 @@ class Calculation:
                                 self.index_of_route[3][1] = y
 
             if self.available:
-                self.set_route()
+                self.set_Route()
 
     def get_index_delta(self, max):
-        array_of_index = []
-
-        for i in range(self.col):
-            for j in range(self.row):
-                if self.delta[i][j] == max and array_of_index == 0:
-                    array_of_index.append(i)
-                    array_of_index.append(j)
-        return array_of_index
+        indexes = []
+        for i in range(self.col-1):
+            for j in range(self.row-1):
+                if self.delta[i][j] == max and len(indexes) == 0:
+                    indexes.append(i)
+                    indexes.append(j)
+        return indexes
 
     def set_Route(self):
         transportation_value = []
