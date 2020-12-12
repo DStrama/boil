@@ -269,16 +269,16 @@ class Calculation:
             array_of_transport.append(transport)
             array_of_unit_profit.append(unit_profit)
 
-            for z in range(alfa_l):
-                alfa.append(self.alfa[z][0])
+        for z in range(alfa_l):
+            alfa.append(self.alfa[z][0])
 
-            for k in range(beta_l):
-                beta.append(self.beta[k][0])
+        for k in range(beta_l):
+            beta.append(self.beta[k][0])
 
-            profit = self.income - self.transportation_cost - self.purchase_cost
-            all_cost = self.purchase_cost + self.transportation_cost
+        profit = self.income - self.transportation_cost - self.purchase_cost
+        all_cost = self.purchase_cost + self.transportation_cost
 
-            self.data_array.append([self.supply, self.demand, array_of_unit_profit, array_of_transport, alfa, beta,
+        self.data_array.append([self.supply, self.demand, array_of_unit_profit, array_of_transport, alfa, beta,
                                     self.transportation_cost, self.purchase_cost, self.income, all_cost, profit])
 
     def get_costs(self):
