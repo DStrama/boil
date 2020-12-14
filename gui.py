@@ -18,7 +18,7 @@ def helperFunction():
     # supply_cost = [5, 5]
     # transport_cost = [[5, 2, 4, 3], [3, 1, 7, 3]]
     # demand = [10, 10, 10, 10]
-    # supply = [15, 25]
+    # supply = [15, 2
 
     # demand_cost = [15, 14, 16]
     # supply_cost = [6, 9]
