@@ -15,6 +15,7 @@ class Solver:
         c = np.array([flow_value[0], flow_value[1], flow_value[2], flow_value[3], flow_value[4], flow_value[5], flow_value[6], flow_value[7], flow_value[8], flow_value[9]])
         res = linprog(c, A_ub=A, b_ub=b, bounds=(0, None))
         print('Optimal value:', round(res.fun), '\nX:', np.ndarray.round(res.x))
+        return res
 
 
 # A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
