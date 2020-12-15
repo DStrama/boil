@@ -23,7 +23,7 @@ def show_results(res):
 
     label1 = tkinter.Label(window, text=" Koszt całkowity: "+ str(round(res.fun))).grid(row=0, column=0)
     label2 = tkinter.Label(window, text=" Koszty jednostkowe: "+str(np.ndarray.round(res.x))).grid(row=1, column=0)
-    window.geometry('500x400')
+    # window.geometry('500x400')
     pass
 
 
@@ -130,5 +130,5 @@ panel.grid(row = 1, column=4)
 
 calculateButton = tkinter.Button(window, text="Oblicz", command=solve)
 calculateButton.grid(row=8, column=7)
-window.geometry('650x400')
+window.geometry('650x450')
 window.mainloop()
