@@ -2,6 +2,7 @@ import array
 import numpy as np
 from numpy import unravel_index
 
+
 class Cell:
 
     def __init__(self, unit_profit, transportation):
@@ -48,8 +49,8 @@ class Calculation:
     def unit_profit_indexes(self):
         unit_profits = []
 
-        for inx_col in range(self.col -1):
-            for inx_row in range(self.row -1):
+        for inx_col in range(self.col - 1):
+            for inx_row in range(self.row - 1):
                 unit_profits.append(self.grid[inx_col][inx_row].unit_profit)
 
         i = 0
@@ -85,9 +86,9 @@ class Calculation:
 
     def get_index_unit_profit(self, unit_profit):
         list = []
-        for inx_col in range(self.col -1):
-            for inx_row in range(self.row -1):
-                if self.grid[inx_col][inx_row].unit_profit == unit_profit and len(list) == 0and not self.grid[inx_col][
+        for inx_col in range(self.col - 1):
+            for inx_row in range(self.row - 1):
+                if self.grid[inx_col][inx_row].unit_profit == unit_profit and len(list) == 0 and not self.grid[inx_col][
                     inx_row].used:
                     self.grid[inx_col][inx_row].used = True
                     list.append(inx_col)
@@ -114,9 +115,9 @@ class Calculation:
 
         for inx_col in range(self.col):
             for inx_row in range(self.row):
-                if inx_col <= (self.col -2) and inx_row <= (self.row -2):
+                if inx_col <= (self.col - 2) and inx_row <= (self.row - 2):
                     unit_profit = self.demand_cost[inx_row] - self.supply_cost[inx_col] - self.transport_cost[inx_col][
-                    inx_row]
+                        inx_row]
                     self.grid[inx_col][inx_row] = Cell(unit_profit, 0)
                 else:
                     self.grid[inx_col][inx_row] = Cell(0, 0)
@@ -166,8 +167,8 @@ class Calculation:
                         self.index_of_transportation[i][1] = inx_j
                         i = i + 1
         else:
-            for k in range((self.col-1), -1, -1):
-                for j in range((self.row-1), -1, -1):
+            for k in range((self.col - 1), -1, -1):
+                for j in range((self.row - 1), -1, -1):
                     if self.grid[k][j].transportation > 0:
                         self.index_of_transportation[i][0] = k
                         self.index_of_transportation[i][1] = j
@@ -206,11 +207,11 @@ class Calculation:
                 self.beta[y][1] = 1
 
     def set_delta(self):
-        for i in range(self.col-1):
-            self.delta[i] = [0] * (self.row-1)
+        for i in range(self.col - 1):
+            self.delta[i] = [0] * (self.row - 1)
 
-        for i in range(self.col-1):
-            for j in range(self.row-1):
+        for i in range(self.col - 1):
+            for j in range(self.row - 1):
                 if self.grid[i][j].transportation == 0:
                     self.delta[i][j] = self.grid[i][j].unit_profit - self.alfa[i][0] - self.beta[j][0]
                 else:
@@ -218,8 +219,8 @@ class Calculation:
 
     def print_grid(self):
         k = 0
-        for i in range(self.col-1):
-            for j in range(self.row-1):
+        for i in range(self.col - 1):
+            for j in range(self.row - 1):
                 print("unit profit: " + str(self.grid[i][j].unit_profit) + " transporation " + str(
                     self.grid[i][j].transportation) + " step: " + str(k))
                 k = k + 1
@@ -240,7 +241,7 @@ class Calculation:
             self.set_index_route()
             self.get_costs()
             self.set_array_of_data()
-        self.print_grid()
+        # self.print_grid()
         print("=========================================================================")
 
     def set_array_of_data(self):
@@ -277,14 +278,14 @@ class Calculation:
         all_cost = self.purchase_cost + self.transportation_cost
 
         self.data_array.append([self.supply, self.demand, array_of_unit_profit, array_of_transport, alfa, beta,
-                                    self.transportation_cost, self.purchase_cost, self.income, all_cost, profit])
+                                self.transportation_cost, self.purchase_cost, self.income, all_cost, profit])
 
     def get_costs(self):
         self.income = 0
         self.transportation_cost = 0
         self.purchase_cost = 0
-        for i in range(self.col-1):
-            for j in range(self.row-1):
+        for i in range(self.col - 1):
+            for j in range(self.row - 1):
                 if self.grid[i][j].transportation > 0:
                     self.transportation_cost += self.grid[i][j].transportation * self.transport_cost[i][j]
                     self.purchase_cost += self.supply_cost[i] * self.grid[i][j].transportation
@@ -302,7 +303,7 @@ class Calculation:
             self.available = False
             for i in range(self.col):
                 if i != y:
-                    for j in range(self.row-1):
+                    for j in range(self.row - 1):
                         if self.grid[y][j].transportation > 0:
                             if self.grid[i][j].transportation > 0 and self.grid[i][x].transportation > 0:
                                 self.available = True
@@ -318,8 +319,8 @@ class Calculation:
 
     def get_index_delta(self, max):
         indexes = []
-        for i in range(self.col-1):
-            for j in range(self.row-1):
+        for i in range(self.col - 1):
+            for j in range(self.row - 1):
                 if self.delta[i][j] == max and len(indexes) == 0:
                     indexes.append(i)
                     indexes.append(j)
